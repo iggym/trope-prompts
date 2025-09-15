@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LLM Prompting Toolkit — Figures of Speech (Cheat-sheet)</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#9aa6b2; --accent:#7dd3fc; --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02); --success:#4ade80; --danger:#fb7185; --mono: 'SFMono-Regular', ui-monospace, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:linear-gradient(180deg,#071025 0%, #071627 60%); color:#e6eef6; -webkit-font-smoothing:antialiased;}
+    header{display:flex;gap:16px;align-items:center;padding:24px 28px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;font-weight:700;color:#012;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    h1{font-size:18px;margin:0}
+    p.lead{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .container{display:grid;grid-template-columns:320px 1fr;gap:24px;padding:20px 28px}
+    nav.card{background:linear-gradient(180deg,var(--card), rgba(10,14,20,0.6));padding:18px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6);max-height:78vh;overflow:auto}
+    .search{display:flex;gap:8px;margin-bottom:12px}
+    .search input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+    .chip{padding:8px 10px;border-radius:999px;background:var(--glass-2);font-size:13px;color:var(--muted);cursor:pointer;border:1px solid rgba(255,255,255,0.02)}
+
+    main{padding:0 2px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 4px 20px rgba(2,6,23,0.6)}
+    .device-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .device-title h3{margin:0;font-size:15px}
+    .alts{color:var(--muted);font-size:12px;margin-top:6px}
+    .function{font-size:13px;color:var(--muted);margin-top:10px}
+    pre{background:rgba(2,6,23,0.5);padding:10px;border-radius:8px;font-family:var(--mono);font-size:13px;overflow:auto}
+    .row{display:flex;gap:8px;margin-top:10px}
+    button.btn{padding:8px 10px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#012;font-weight:600;cursor:pointer}
+    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px}
+    .example{margin-top:10px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);font-size:13px}
+    .tag{display:inline-block;font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);color:var(--muted);margin-right:6px}
+    footer{padding:18px 28px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:900px){.container{grid-template-columns:1fr;padding:12px}.logo{width:48px;height:48px}.search input{font-size:14px}}
+
+    /* small util */
+    .hidden{display:none}
+    .kbd{font-family:var(--mono);background:rgba(255,255,255,0.03);padding:4px 6px;border-radius:6px;color:var(--muted);font-size:12px}
+    .download{margin-left:auto}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">LT</div>
+    <div>
+      <h1>LLM Prompting Toolkit — Figures of Speech</h1>
+      <p class="lead">Interactive cheat-sheet with copyable prompt templates, examples, and toggles. Click a template to copy, toggle examples to inspect outputs.</p>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="downloadBtn" class="btn">Download HTML</button>
+      <button id="printBtn" class="ghost">Print</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <nav class="card">
+      <div class="search">
+        <input id="q" placeholder="Search devices, templates, or effects…"/>
+        <button id="clearQ" class="ghost">Clear</button>
+      </div>
+      <div class="controls" id="filters">
+        <div class="chip" data-filter="imagery">Imagery</div>
+        <div class="chip" data-filter="persuasion">Persuasion</div>
+        <div class="chip" data-filter="rhythm">Rhythm</div>
+        <div class="chip" data-filter="humor">Humor</div>
+        <div class="chip" data-filter="teaching">Teaching</div>
+        <div class="chip" data-filter="tone">Tone</div>
+      </div>
+      <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0"/>
+      <div class="muted">Quick jump</div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+        <!-- generated links -->
+      </div>
+    </nav>
+
+    <main>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
+        <div class="tag">Single-file HTML</div>
+        <div class="tag">Copy templates</div>
+        <div class="tag">Toggle examples</div>
+        <div style="margin-left:auto;color:var(--muted);font-size:13px">Keyboard: <span class="kbd">/</span> to focus search</div>
+      </div>
+
+      <section class="grid" id="cards">
+        <!-- Cards injected by JS -->
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    Tip: click any "Copy" button to put the prompt pattern into your clipboard. Use the toggle to reveal a sample output. You can also download this single-file HTML via the top button.
+  </footer>
+
+  <script>
+    // Data: concise device entries (name, alt, function, tags, pattern, example, sampleOutput)
+    const devices = [
+      {id:'simile',name:'Simile',alt:'comparison (like/as)',fn:'Creates direct, accessible comparisons to make abstract ideas vivid.',tags:['imagery'],pattern:`Write ${'__TASK__'} using similes that compare [subject] to [concrete images], e.g., 'like ___' or 'as ___ as ___'. Use N similes and keep them fresh.`,example:`Describe a startup founder's first pitch using 3 similes comparing them to things in nature.`,sample:`She loosened her tie like a river letting go of a stubborn log, words flowing as sunlight on glass; her confidence rose like morning mist burning off the valley.`},
+      {id:'metaphor',name:'Metaphor',alt:'implicit comparison',fn:'Reframes ideas by asserting one thing is another; produces strong imagery.',tags:['imagery','teaching'],pattern:`Write ${'__TASK__'} using metaphors where [subject] is [concrete image]. Use metaphors to reframe the main idea.`,example:`Explain product-market fit as a metaphor: the product is a ___.`,sample:`Product-market fit is a tailor: it sketches, cuts, and stitches the market’s silhouette until clothes stop tearing at the seams.`},
+      {id:'personification',name:'Personification',alt:'anthropomorphism',fn:'Gives human attributes to nonhuman things to generate empathy and vividness.',tags:['imagery','tone'],pattern:`Describe [subject] with personification — give it human wants, feelings, and gestures. Keep voice [formal/casual].`,example:`Personify a neglected smartphone writing a diary entry.`,sample:`It sighed each night as its battery dwindled, jealous when dust gathered like a crowd at a forgotten play.`},
+      {id:'hyperbole',name:'Hyperbole',alt:'exaggeration',fn:'Amplifies emotion or emphasis for persuasive or comedic effect.',tags:['persuasion','humor'],pattern:`Use tasteful hyperbole to emphasize [claim]. Limit to N exaggerated lines.`,example:`Write a short product headline using hyperbole to create excitement—no more than one line.`,sample:`So fast, it outruns your to-do list and files your taxes before coffee.`},
+      {id:'litotes',name:'Litotes',alt:'understatement (negation)',fn:'Softens claims via negation; creates wry or modest tone.',tags:['tone','persuasion'],pattern:`Express praise or critique using litotes (e.g., 'not bad', 'hardly insignificant') to create a restrained tone.`,example:`Write a review of a wildly successful show using litotes to sound wry.`,sample:`It's not exactly shabby—a performance that makes your calendar jealous.`},
+      {id:'irony',name:'Irony',alt:'verbal/situational',fn:'Creates wit by exposing a gap between expectation and reality; can be subtle.',tags:['humor','tone'],pattern:`Produce ${'__TASK__'} where the tone is ironic: show a contrast between what is said and what is meant. Flag irony if ambiguous.`,example:`Describe a chaotic office as if everything were perfectly organized.`,sample:`Every file has its place—somewhere between the sofa and the stack labeled ‘soon’.`},
+      {id:'sarcasm',name:'Sarcasm',alt:'biting irony',fn:'Sharp critique or humor; risk of alienation if misused.',tags:['humor'],pattern:`Write a sarcastic response to [claim]—edge but not abusive. Add guardrails: no personal attacks.`,example:`Sarcastic tweet to someone bragging about missing a meeting.`,sample:`Wow, congratulations on your consistent dedication to *not* being here. Truly inspirational.`},
+      {id:'metonymy',name:'Metonymy',alt:'association substitution',fn:'Uses related entities to refer to institutions or ideas compactly.',tags:['teaching','tone'],pattern:`Use metonymy to describe institutions: replace organization names with symbolic objects (e.g., 'the crown', 'Wall Street').`,example:`Report a policy change using metonymy for government entities.`,sample:`The Treasury announced new measures today aimed at cooling the market.`},
+      {id:'synecdoche',name:'Synecdoche',alt:'part-for-whole',fn:'Uses a part to represent the whole, creating intimacy or emphasis.',tags:['imagery','teaching'],pattern:`Use synecdoche to emphasize a part that represents the whole—e.g., 'hands' for workers.`,example:`Write a rallying sentence for volunteers using synecdoche.`,sample:`All hands on deck—every pair of palms brings us closer to the shore.`},
+      {id:'alliteration',name:'Alliteration',alt:'head rhyme',fn:'Creates musicality and memorability; excellent for short slogans.',tags:['rhythm'],pattern:`Create a short headline or tagline that uses alliteration for impact. Keep it concise (3 words).`,example:`Product tagline with alliteration for a mindfulness app.`,sample:`Pause. Practice. Presence.`},
+      {id:'assonance',name:'Assonance & Consonance',alt:'vowel/consonant repeat',fn:'Provides subtle rhythm and sonic texture.',tags:['rhythm'],pattern:`Write a 2-line lyric that uses assonance (repetition of vowel sounds) to create a soothing effect.`,example:`Two-line poem using long 'o' sounds for melancholy.`,sample:`Slow rows of moonlight float on open roads of old.`},
+      {id:'onomatopoeia',name:'Onomatopoeia',alt:'sound words',fn:'Makes scenes audible with sound-imitating words.',tags:['imagery'],pattern:`Include onomatopoeia to make the scene audible—use 2–3 sound words.`,example:`Scene of rain on a metal roof, include sound words.`,sample:`Rain spat and drummed on the tin, a slow tattoo that hummed the night awake.`},
+      {id:'anaphora',name:'Anaphora',alt:'repetition (start)',fn:'Builds momentum and emphasis by repeating phrase starts—great for speeches.',tags:['persuasion','rhythm'],pattern:`Write a short speech paragraph using anaphora (repeat a phrase at the start of each sentence) for emphasis.`,example:`Brief campaign speech using 'We will...' as anaphora.`,sample:`We will rebuild trust. We will restore opportunity. We will deliver results.`},
+      {id:'epistrophe',name:'Epistrophe',alt:'repetition (end)',fn:'Creates emphatic closure by repeating sentence endings.',tags:['persuasion'],pattern:`End successive lines with the same phrase (epistrophe) to hammer a point home.`,example:`Three-line ad copy ending with 'for you'.`,sample:`Solutions built for you. Support tailored for you. Savings that matter for you.`},
+      {id:'chiasmus',name:'Chiasmus',alt:'inverted parallelism',fn:'Elegant, memorable emphasis via ABBA structure.',tags:['rhythm'],pattern:`Write a one-sentence aphorism using chiasmus (ABBA structure).`,example:`Create a chiasmus about leadership.`,sample:`Lead not to be served, but to serve.`},
+      {id:'antithesis',name:'Antithesis',alt:'juxtaposition',fn:'Highlights contrast to clarify tradeoffs or values.',tags:['persuasion'],pattern:`Frame X using antithesis: present two opposite ideas side-by-side to clarify the tradeoff.`,example:`A tagline contrasting speed and quality.`,sample:`Quick decisions, not quick fixes.`},
+      {id:'parallelism',name:'Parallelism',alt:'balanced structure',fn:'Improves rhythm, readability, and persuasion by repeating grammatical structures.',tags:['persuasion','rhythm'],pattern:`Use parallel sentence structures to list benefits in triplets.`,example:`List three core features in parallel for a product page.`,sample:`Secure login, seamless sync, simple sharing.`},
+      {id:'rhetq',name:'Rhetorical Question',alt:'rhet. question',fn:'Engages readers; provokes reflection without expectation of answer.',tags:['persuasion'],pattern:`Open with a rhetorical question that makes the reader reflect on problem X.`,example:`Marketing opener for time-management tool.`,sample:`Tired of endless tabs and no progress?`},
+      {id:'ellipsis',name:'Ellipsis',alt:'trailing off',fn:'Creates suspense or implication by omitting or trailing off.',tags:['tone','humor'],pattern:`Use ellipsis or trailing-off to create suspense; keep it to one dramatic instance per paragraph.`,example:`Finish the mystery story's paragraph with an ellipsis for a cliffhanger.`,sample:`She opened the door—and then she saw…`},
+      {id:'aposiopesis',name:'Aposiopesis',alt:'sudden break',fn:'Dramatic interruption that implies intense unsaid emotion.',tags:['tone'],pattern:`End a line abruptly to suggest unsaid consequences or intense feeling.`,example:`Angry letter that trails off to hint at consequences.`,sample:`If you think I'll let this slide, you—`},
+      {id:'oxymoron',name:'Oxymoron',alt:'contradictory phrase',fn:'Conveys paradox or witty nuance via tight contradiction.',tags:['humor','rhythm'],pattern:`Create a short phrase using an oxymoron to capture complex emotion (2 words).`,example:`Two-word product descriptor that's paradoxical.`,sample:`Organized chaos.`},
+      {id:'paradox',name:'Paradox',alt:'apparent contradiction',fn:'Provokes deeper thought by stating a truth that seems contradictory.',tags:['teaching','tone'],pattern:`Introduce a paradoxical statement that reframes assumptions about X.`,example:`One-sentence paradox about learning and forgetting.`,sample:`To remember what matters, we must first forget the rest.`},
+      {id:'euphemism',name:'Euphemism & Dysphemism',alt:'soft/sharp phrasing',fn:'Controls politeness (euphemism) or intensifies negativity (dysphemism).',tags:['tone'],pattern:`Express [sensitive idea] using a euphemism to soften or a dysphemism to sharpen.`,example:`Rewrite 'fired' using a euphemism for HR communication.`,sample:`We are initiating a role-transition.`},
+      {id:'zeugma',name:'Zeugma',alt:'bridging verb',fn:'Witty compression where one verb governs two nouns in different senses.',tags:['humor'],pattern:`Use zeugma in a witty sentence where one verb applies to two nouns differently.`,example:`Craft a witty one-liner using zeugma.`,sample:`She stole his heart and his umbrella.`},
+      {id:'polysyndeton',name:'Polysyndeton & Asyndeton',alt:'many/none conjunctions',fn:'Polysyndeton slows and amplifies; asyndeton compresses and speeds.',tags:['rhythm','persuasion'],pattern:`Write a list using polysyndeton ('and' repeated) to pile on emotion, or asyndeton (no conjunctions) to compress.`,example:`Polysyndeton: List reasons to care using repeated 'and'. Asyndeton: List product features without conjunctions.`,sample:`Polysyndeton: We fought and hoped and waited and won. Asyndeton: Fast, secure, intuitive.`},
+      {id:'inversion',name:'Inversion / Anastrophe',alt:'flipped word order',fn:'Emphasizes or creates a lyrical/archaic tone by altering word order.',tags:['tone','rhythm'],pattern:`Write a sentence with deliberate inversion to highlight [word/idea].`,example:`Describe twilight with inverted word order.`,sample:`Silvery was the sky at dusk.`},
+      {id:'allusion',name:'Allusion',alt:'indirect reference',fn:'Adds depth via shared cultural knowledge; efficient for resonant shorthand.',tags:['teaching','tone'],pattern:`Include subtle allusions to [source] to create resonance; optionally define briefly in parentheses.`,example:`Describe a tech founder with a subtle allusion to Prometheus.`,sample:`He stole fire for the people—lines of code that warmed the cold corners of the web.`},
+      {id:'analogy',name:'Analogy',alt:'extended comparison',fn:'Explains complex concepts by mapping them to familiar systems.',tags:['teaching'],pattern:`Explain [technical concept] using an extended analogy to [everyday system], mapping 3–4 elements.`,example:`Explain blockchain as a neighborhood ledger.`,sample:`Imagine a ledger everyone keeps copies of: when one neighbor writes a note, every copy updates—no single neighbor can erase history.`},
+      {id:'allegory',name:'Allegory',alt:'extended symbol story',fn:'Uses story to teach a moral or system-level insight over several paragraphs.',tags:['teaching'],pattern:`Create a short allegory (3–4 paragraphs) symbolically representing [abstract concept].`,example:`Allegory for company culture as a garden.`,sample:`In the garden, some seeds were watered strictly by policy; others by neighbors who'd learned how to listen.`},
+      {id:'idiom',name:'Idiom',alt:'fixed expression',fn:'Signals voice and familiarity; can be colloquial and region-specific.',tags:['tone'],pattern:`Use idioms appropriate to [dialect/region] to give voice: limit to N idioms and define them if needed.`,example:`Write a friendly email using two common American idioms.`,sample:`Let's touch base next week and get all our ducks in a row.`}
+    ];
+
+    // build UI
+    const cards = document.getElementById('cards');
+    const quickJump = document.querySelector('nav.card > div:nth-child(4) + div');
+    devices.forEach(d => {
+      const el = document.createElement('article'); el.className='card'; el.id='card-'+d.id;
+      el.innerHTML = `
+        <div class='device-title'>
+          <div>
+            <h3>${d.name}</h3>
+            <div class='alts'>${d.alt}</div>
+          </div>
+          <div style='text-align:right'>
+            <div class='muted'>${d.tags.join(', ')}</div>
+          </div>
+        </div>
+        <div class='function'>${d.fn}</div>
+        <div style='margin-top:10px;font-size:13px'>
+          <strong>Prompt pattern</strong>
+          <pre id='pattern-${d.id}'>${escapeHtml(d.pattern)}</pre>
+        </div>
+        <div class='row'>
+          <button class='btn copy' data-target='pattern-${d.id}'>Copy pattern</button>
+          <button class='ghost copy example-copy' data-text='${escapeAttr(d.example)}'>Copy example</button>
+          <button class='ghost toggle-example' data-target='ex-${d.id}'>Toggle example</button>
+        </div>
+        <div id='ex-${d.id}' class='example hidden'>
+          <div style='font-size:13px;color:var(--muted)'><strong>Example prompt:</strong> ${escapeHtml(d.example)}</div>
+          <div style='margin-top:8px;font-size:13px'><strong>Sample output:</strong>
+            <div style='margin-top:6px;padding:8px;background:rgba(255,255,255,0.02);border-radius:8px;font-family:var(--mono);'>${escapeHtml(d.sample)}</div>
+          </div>
+        </div>
+      `;
+      cards.appendChild(el);
+
+      const a = document.createElement('a'); a.href = '#card-'+d.id; a.textContent = d.name; a.style.color='var(--muted)'; a.style.fontSize='13px'; a.style.textDecoration='none'; a.style.padding='6px 0'; quickJump.appendChild(a);
+    });
+
+    // utilities
+    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escapeAttr(s){ return s.replace(/'/g,"\'").replace(/"/g,'&quot;').replace(/\n/g,'\\n'); }
+
+    // copy handlers
+    document.addEventListener('click', e => {
+      if(e.target.matches('.copy')){
+        const id = e.target.dataset.target; const el = document.getElementById(id);
+        const text = el ? el.textContent : e.target.dataset.text || '';
+        navigator.clipboard.writeText(text).then(()=>{
+          e.target.textContent='Copied'; setTimeout(()=>e.target.textContent='Copy pattern',1200)
+        })
+      }
+      if(e.target.matches('.example-copy')){
+        const txt = e.target.dataset.text; navigator.clipboard.writeText(txt).then(()=>{e.target.textContent='Copied'; setTimeout(()=>e.target.textContent='Copy example',1200)})
+      }
+      if(e.target.matches('.toggle-example')){
+        const tgt = document.getElementById(e.target.dataset.target);
+        tgt.classList.toggle('hidden');
+        e.target.textContent = tgt.classList.contains('hidden') ? 'Toggle example' : 'Hide example';
+      }
+    });
+
+    // search
+    const q = document.getElementById('q'); const clearQ = document.getElementById('clearQ');
+    q.addEventListener('input', filter);
+    clearQ.addEventListener('click', ()=>{q.value=''; filter();});
+    function filter(){
+      const v = q.value.trim().toLowerCase();
+      devices.forEach(d=>{
+        const el = document.getElementById('card-'+d.id);
+        const hay = (d.name + ' ' + d.alt + ' ' + d.fn + ' ' + d.pattern + ' ' + d.example).toLowerCase();
+        el.style.display = hay.includes(v) ? '' : 'none';
+      })
+    }
+
+    // filters
+    document.getElementById('filters').addEventListener('click', e=>{
+      if(e.target.dataset && e.target.dataset.filter){
+        const f = e.target.dataset.filter;
+        devices.forEach(d=>{
+          const el = document.getElementById('card-'+d.id);
+          el.style.display = d.tags.includes(f) ? '' : 'none';
+        });
+      }
+    });
+
+    // keyboard focus for search (/)
+    window.addEventListener('keydown', e=>{ if(e.key === '/') { e.preventDefault(); q.focus(); }});
+
+    // download current HTML file
+    document.getElementById('downloadBtn').addEventListener('click', ()=>{
+      const html = `<!doctype html>\n` + document.documentElement.outerHTML;
+      const blob = new Blob([html],{type:'text/html'}); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'llm-prompting-toolkit-figures-of-speech.html'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    // print
+    document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+
+    // small accessibility: announce when copy occurred
+    document.addEventListener('copy', ()=>{/*noop*/});
+  </script>
+</body>
+</html>
