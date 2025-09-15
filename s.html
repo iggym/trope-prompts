@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Prompting Toolkit: Figures of Speech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: "Warm Neutral" - A calming palette using beige, slate, stone, and a muted teal for accents to create a professional, focused, and easy-to-read environment suitable for a learning tool. -->
+    <!-- Application Structure Plan: The application is designed as a single-page interactive toolkit. The structure consists of a header, a category-based filter navigation bar, and a dynamic grid of cards. This was chosen for usability because it allows users to either get a broad overview ('All') or drill down into specific categories of rhetorical devices without leaving the page. Clicking a card opens a modal with detailed information (definition, examples, and LLM prompting advice). This modal approach keeps the main interface clean and prevents overwhelming the user, ensuring the focus is on one concept at a time. The flow is: User lands -> sees all figures -> filters by category (optional) -> clicks a card -> studies details in modal -> closes modal and explores another. -->
+    <!-- Visualization & Content Choices: The core information is textual, so the "visualization" is a structured, interactive card layout. Report Info: List of figures of speech, examples, and prompting uses. -> Goal: Organize & Inform. -> Viz/Presentation Method: An interactive card grid and a detail modal. The card provides a quick summary (name/category), and the modal provides the deep dive. -> Interaction: Users can filter the grid by clicking category buttons and view details by clicking cards. -> Justification: This two-level hierarchy (grid -> modal) is a standard, highly intuitive UI pattern for exploring a collection of items. It manages complexity well and allows for focused learning. -> Library/Method: Vanilla JavaScript for DOM manipulation and event handling, Tailwind CSS for styling. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #F5F5F4; /* stone-100 */
+        }
+        .active-filter {
+            background-color: #14B8A6; /* teal-500 */
+            color: white;
+            border-color: #14B8A6; /* teal-500 */
+        }
+        .modal-bg {
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .prose-custom ul {
+            list-style-position: inside;
+            padding-left: 1rem;
+        }
+        .prose-custom li::marker {
+            content: '• ';
+            color: #57534E; /* stone-600 */
+        }
+    </style>
+</head>
+<body class="font-sans text-stone-800">
+
+    <div id="app" class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-700">Figures of Speech</h1>
+            <p class="text-lg text-stone-600 mt-2">An Interactive Toolkit for More Effective LLM Prompting</p>
+        </header>
+
+        <nav id="filter-nav" class="flex flex-wrap justify-center gap-2 mb-8">
+        </nav>
+
+        <main id="card-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        </main>
+
+    </div>
+
+    <div id="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg opacity-0 pointer-events-none">
+        <div id="modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 md:p-8 transform scale-95">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 id="modal-title" class="text-3xl font-bold text-slate-700"></h2>
+                    <p id="modal-alternatives" class="text-sm text-stone-500 italic mt-1"></p>
+                </div>
+                <button id="close-modal" class="text-3xl text-stone-500 hover:text-red-500 transition-colors">&times;</button>
+            </div>
+            
+            <div class="space-y-6 prose-custom">
+                <div>
+                    <h3 class="font-semibold text-teal-600 border-b pb-1 mb-2">Definition</h3>
+                    <p id="modal-definition" class="text-stone-700"></p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-teal-600 border-b pb-1 mb-2">Examples</h3>
+                    <ul id="modal-examples" class="list-disc space-y-1 text-stone-700">
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-teal-600 border-b pb-1 mb-2">LLM Prompting Application</h3>
+                    <p id="modal-prompting" class="text-stone-700 bg-stone-100 p-4 rounded-md"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const figuresOfSpeech = [
+                {
+                    name: "Metaphor",
+                    category: "Comparison",
+                    alternatives: "Direct Comparison, Implied Simile",
+                    definition: "A figure of speech in which a word or phrase is applied to an object or action to which it is not literally applicable, creating an implicit comparison.",
+                    examples: [
+                        "The world is a stage.",
+                        "He has a heart of stone.",
+                        "Time is a thief.",
+                        "The classroom was a zoo.",
+                        "Her voice is music to his ears.",
+                        "He is a shining star.",
+                        "The snow is a white blanket.",
+                        "Life is a rollercoaster.",
+                        "His words were a dagger in her heart.",
+                        "The politician's speech was a storm of controversy.",
+                        "She has a bubbly personality.",
+                        "Chaos is a friend of mine."
+                    ],
+                    prompting: "Use metaphors to make the LLM generate more creative and abstract text. Prompt: 'Describe a new software product using the metaphor of a well-tended garden.' This forces connections between growth, care, structure, and the software's features."
+                },
+                {
+                    name: "Simile",
+                    category: "Comparison",
+                    alternatives: "Indirect Comparison",
+                    definition: "A figure of speech involving the comparison of one thing with another thing of a different kind, using 'like' or 'as', to make a description more emphatic or vivid.",
+                    examples: [
+                        "He is as brave as a lion.",
+                        "She swims like a fish.",
+                        "The explanation was as clear as mud.",
+                        "They fought like cats and dogs.",
+                        "He is as strong as an ox.",
+                        "The new mattress is like sleeping on a cloud.",
+                        "Her smile was as bright as the sun.",
+                        "He ran as fast as the wind.",
+                        "The water was as cold as ice.",
+                        "Life is like a box of chocolates.",
+                        "The lecture was as dry as dust.",
+                        "The baby's skin is as smooth as silk."
+                    ],
+                    prompting: "Employ similes to guide the LLM's tone and imagery. Prompt: 'Write a description of a quiet forest. Use similes to evoke a sense of peace, like a library and a sleeping giant.' This provides concrete comparative anchors for the desired mood."
+                },
+                {
+                    name: "Personification",
+                    category: "Comparison",
+                    alternatives: "Anthropomorphism",
+                    definition: "The attribution of a personal nature or human characteristics to something nonhuman, or the representation of an abstract quality in human form.",
+                    examples: [
+                        "The wind whispered through the trees.",
+                        "My computer hates me.",
+                        "The sun smiled down on us.",
+                        "The camera loves her.",
+                        "Justice is blind.",
+                        "The last piece of cake was calling my name.",
+                        "The car engine coughed and sputtered.",
+                        "Time marches on.",
+                        "The flowers danced in the breeze.",
+                        "The old house groaned under the weight of the snow.",
+                        "The lightning lashed out with anger.",
+                        "Opportunity knocked on his door."
+                    ],
+                    prompting: "Use personification to have the LLM create more engaging and relatable narratives, especially about inanimate objects or concepts. Prompt: 'Tell a short story from the perspective of a forgotten, antique armchair. Personify it with feelings of loneliness and nostalgia.'"
+                },
+                {
+                    name: "Hyperbole",
+                    category: "Emphasis",
+                    alternatives: "Exaggeration, Overstatement",
+                    definition: "Exaggerated statements or claims not meant to be taken literally, used for emphasis or effect.",
+                    examples: [
+                        "I'm so hungry I could eat a horse.",
+                        "I've told you a million times.",
+                        "He's older than the hills.",
+                        "She cried a river of tears.",
+                        "This bag weighs a ton.",
+                        "I have a mountain of homework.",
+                        "He runs faster than the speed of light.",
+                        "It took forever to get here.",
+                        "My dad is going to kill me.",
+                        "That's the best idea I've ever heard in my entire life.",
+                        "The whole world was watching.",
+                        "I'm dying of laughter."
+                    ],
+                    prompting: "Instruct the LLM to use hyperbole to generate text with a specific emotional tone, like humor or urgency. Prompt: 'Write a product review for a slow internet connection using extreme hyperbole. Describe its speed in the most exaggeratedly slow terms possible.'"
+                },
+                {
+                    name: "Irony",
+                    category: "Wordplay",
+                    alternatives: "Sarcasm (Verbal), Dramatic Irony, Situational Irony",
+                    definition: "A state of affairs or an event that seems deliberately contrary to what one expects and is often amusing as a result. It can also be a literary technique of indicating an intention or attitude opposite to that which is actually stated.",
+                    examples: [
+                        "A fire station burns down. (Situational)",
+                        "A pilot has a fear of heights. (Situational)",
+                        "Saying 'What lovely weather!' during a hurricane. (Verbal)",
+                        "A traffic cop gets his license suspended for unpaid parking tickets. (Situational)",
+                        "The Titanic was described as '100% unsinkable'. (Situational)",
+                        "In a horror movie, the audience knows the killer is in the closet, but the character does not. (Dramatic)",
+                        "A marriage counselor files for divorce. (Situational)",
+                        "Stepping out into a storm and saying, 'It's a beautiful day.' (Verbal)",
+                        "A post on Facebook complaining about how useless Facebook is. (Situational)",
+                        "The vegan chef was famous for his steak recipe. (Situational)",
+                        "Telling a quiet person, 'Don't talk so much!' (Verbal)",
+                        "An English teacher who can't spell. (Situational)"
+                    ],
+                    prompting: "Challenge the LLM to generate more complex narratives by asking for specific types of irony. Prompt: 'Write a short story about a brilliant detective who is completely oblivious to his own wife's secret life. The story should be rich in dramatic irony.'"
+                },
+                {
+                    name: "Oxymoron",
+                    category: "Emphasis",
+                    alternatives: "Contradiction in terms",
+                    definition: "A figure of speech in which apparently contradictory terms appear in conjunction.",
+                    examples: [
+                        "Jumbo shrimp",
+                        "Living dead",
+                        "Deafening silence",
+                        "Act naturally",
+                        "Alone together",
+                        "Clearly misunderstood",
+                        "Open secret",
+                        "Original copy",
+                        "Sad smile",
+                        "Sweet sorrow",
+                        "Virtual reality",
+                        "Controlled chaos"
+                    ],
+                    prompting: "Use oxymorons to prompt the LLM for nuanced or paradoxical concepts. Prompt: 'Generate a list of potential names for a new tech startup that specializes in simplifying complex data. The names should be oxymorons, like \"Simple Intelligence\" or \"Chaotic Order\".'"
+                },
+                {
+                    name: "Alliteration",
+                    category: "Sound",
+                    alternatives: "Head Rhyme, Initial Rhyme",
+                    definition: "The occurrence of the same letter or sound at the beginning of adjacent or closely connected words.",
+                    examples: [
+                        "Peter Piper picked a peck of pickled peppers.",
+                        "She sells seashells by the seashore.",
+                        "A big bully beats a baby boy.",
+                        "Don's dog dug deep ditches.",
+                        "Carrie's cat clawed her couch.",
+                        "The wild winds whipped.",
+                        "Fred fried Fritos for his friends.",
+                        "Go and gather the green leaves on the grass.",
+                        "Larry's lizard likes leaping leopards.",
+                        "Nick's nephew needed new notebooks.",
+                        "Walter wondered where Winnie was.",
+                        "The beautiful bouquet blossomed."
+                    ],
+                    prompting: "Specify alliteration to control the poetic or stylistic quality of the output. Prompt: 'Write a tagline for a coffee brand. It must use alliteration with the letter 'C' and convey a feeling of comfort and quality.'"
+                },
+                {
+                    name: "Onomatopoeia",
+                    category: "Sound",
+                    alternatives: "Sound Word",
+                    definition: "The formation of a word from a sound associated with what is named.",
+                    examples: [
+                        "The bee buzzed by my ear.",
+                        "The rustling leaves kept me awake.",
+                        "He heard the whisper of the wind.",
+                        "The car screeched to a halt.",
+                        "The bacon sizzled in the pan.",
+                        "The old floorboards creaked.",
+                        "The thunder boomed.",
+                        "The clock ticked loudly.",
+                        "The cat meowed for its food.",
+                        "The fire engine's siren wailed.",
+                        "The snake hissed at its prey.",
+                        "Water plops into the pond."
+                    ],
+                    prompting: "Use onomatopoeia to get more vivid and sensory descriptions from the LLM. Prompt: 'Describe a busy city street scene. Incorporate at least five different examples of onomatopoeia to bring the sounds of the city to life.'"
+                },
+                {
+                    name: "Anaphora",
+                    category: "Structure",
+                    alternatives: "Repetition",
+                    definition: "The repetition of a word or phrase at the beginning of successive clauses.",
+                    examples: [
+                        "I have a dream... I have a dream... I have a dream...",
+                        "We shall not fail. We shall go on to the end. We shall fight in France.",
+                        "It was the best of times, it was the worst of times.",
+                        "Go big or go home.",
+                        "Stay safe. Stay well. Stay happy.",
+                        "Mad world! Mad kings! Mad composition!",
+                        "With malice toward none; with charity for all; with firmness in the right.",
+                        "Everything looked dark and bleak; everything looked gloomy.",
+                        "To think on death it is a misery, To think on life it is a vanity.",
+                        "In every cry of every Man, In every infant's cry of fear, In every voice...",
+                        "This blessed plot, this earth, this realm, this England.",
+                        "What we need is a plan. What we need is action."
+                    ],
+                    prompting: "Employ anaphora to structure the LLM's output for persuasive or rhetorical effect. Prompt: 'Write the opening of a motivational speech. Start three consecutive sentences with the phrase \"Believe in...\" to create a powerful, rhythmic message.'"
+                },
+                 {
+                    name: "Synecdoche",
+                    category: "Substitution",
+                    alternatives: "Part for Whole",
+                    definition: "A figure of speech in which a part is made to represent the whole or vice versa.",
+                    examples: [
+                        "All hands on deck. (Hands for crew members)",
+                        "The White House declared... (White House for the US government)",
+                        "I've got a new set of wheels. (Wheels for a car)",
+                        "He asked for her hand in marriage. (Hand for the whole person)",
+                        "The suits on Wall Street are ruthless. (Suits for business people)",
+                        "We need to hire more boots on the ground. (Boots for soldiers)",
+                        "Lend me your ears. (Ears for attention)",
+                        "He is the new face in the office. (Face for a person)",
+                        "The strings section is phenomenal. (Strings for the string instruments)",
+                        "She's the head of the company. (Head for the leader)",
+                        "The world has not been kind to him. (World for people in the world)",
+                        "The pen is mightier than the sword. (Pen for written words, sword for military force)",
+                    ],
+                    prompting: "Use synecdoche to ask the LLM for more concise and evocative language. Prompt: 'Rewrite the sentence \"The team of workers finished the project\" using synecdoche. For example, by referring to the workers as 'the hands'."
+                },
+                {
+                    name: "Metonymy",
+                    category: "Substitution",
+                    alternatives: "Association",
+                    definition: "The substitution of the name of an attribute or adjunct for that of the thing meant.",
+                    examples: [
+                        "The pen is mightier than the sword. (Pen for writing, sword for war)",
+                        "The crown has declared war. (Crown for the monarchy)",
+                        "Hollywood is releasing a new blockbuster. (Hollywood for the film industry)",
+                        "He's a man of the cloth. (Cloth for the clergy)",
+                        "Can you give me a hand? (Hand for help)",
+                        "The press is hounding the celebrity. (Press for journalists)",
+                        "He swore loyalty to the flag. (Flag for the country)",
+                        "The kitchen is cooking up a storm. (Kitchen for the chefs)",
+                        "Silicon Valley is known for innovation. (Silicon Valley for the tech industry)",
+                        "The kettle is boiling. (Kettle for the water inside it)",
+                        "Dish is a nice word for a good meal.",
+                        "I'm all ears. (Ears for full attention)"
+                    ],
+                    prompting: "Leverage metonymy to get the LLM to write in a more sophisticated, journalistic, or idiomatic style. Prompt: 'Write a news headline about a decision made by the US president, but use metonymy by referring to 'The White House' instead of the person.'"
+                },
+                {
+                    name: "Litotes",
+                    category: "Emphasis",
+                    alternatives: "Understatement, Double Negative",
+                    definition: "Ironic understatement in which an affirmative is expressed by the negative of its contrary.",
+                    examples: [
+                        "You won't be sorry. (Meaning you'll be glad)",
+                        "She's not a bad singer. (Meaning she's a good singer)",
+                        "The journey was not an easy one. (Meaning it was difficult)",
+                        "He is not the sharpest tool in the shed. (Meaning he is not smart)",
+                        "It's not uncommon to see deer here. (Meaning it's common)",
+                        "That's not a terrible idea. (Meaning it's a good idea)",
+                        "The food wasn't inedible. (Meaning it was edible)",
+                        "He's not without his charms. (Meaning he has charms)",
+                        "The exam was not impossible. (Meaning it was possible)",
+                        "She is not unlike her mother. (Meaning she is like her mother)",
+                        "A million dollars is not a small amount. (Meaning it's a large amount)",
+                        "Running a marathon is no small feat. (Meaning it's a great achievement)"
+                    ],
+                    prompting: "Use litotes to prompt for a more subtle, polite, or ironic tone. Prompt: 'Write a diplomatic rejection of a business proposal. Use litotes to soften the refusal, for example, by saying \"Your proposal is not without merit, however...\"'"
+                }
+            ];
+
+            const filterNav = document.getElementById('filter-nav');
+            const cardGrid = document.getElementById('card-grid');
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            const categories = ['All', ...new Set(figuresOfSpeech.map(fig => fig.category))];
+
+            function createFilterButtons() {
+                categories.forEach(category => {
+                    const button = document.createElement('button');
+                    button.textContent = category;
+                    button.className = 'px-4 py-2 border-2 border-stone-300 rounded-full text-sm font-semibold text-stone-600 hover:bg-teal-400 hover:text-white hover:border-teal-400 transition-colors';
+                    if (category === 'All') {
+                        button.classList.add('active-filter');
+                    }
+                    button.dataset.category = category;
+                    filterNav.appendChild(button);
+                });
+            }
+
+            function renderCards(filter = 'All') {
+                cardGrid.innerHTML = '';
+                const filteredFigures = filter === 'All' ? figuresOfSpeech : figuresOfSpeech.filter(fig => fig.category === filter);
+
+                filteredFigures.forEach(fig => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-5 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer';
+                    card.dataset.name = fig.name;
+                    card.innerHTML = `
+                        <h3 class="font-bold text-lg text-slate-700">${fig.name}</h3>
+                        <p class="text-sm text-teal-600 font-medium">${fig.category}</p>
+                    `;
+                    cardGrid.appendChild(card);
+                });
+            }
+
+            function showModal(name) {
+                const fig = figuresOfSpeech.find(f => f.name === name);
+                if (!fig) return;
+
+                document.getElementById('modal-title').textContent = fig.name;
+                document.getElementById('modal-alternatives').textContent = `Also known as: ${fig.alternatives}`;
+                document.getElementById('modal-definition').textContent = fig.definition;
+                
+                const examplesList = document.getElementById('modal-examples');
+                examplesList.innerHTML = fig.examples.map(ex => `<li>${ex}</li>`).join('');
+
+                document.getElementById('modal-prompting').textContent = fig.prompting;
+                
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modalContent.classList.remove('scale-95');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideModal() {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                modalContent.classList.add('scale-95');
+                document.body.style.overflow = 'auto';
+            }
+
+            filterNav.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const category = e.target.dataset.category;
+                    renderCards(category);
+                    
+                    document.querySelectorAll('#filter-nav button').forEach(btn => {
+                        btn.classList.remove('active-filter');
+                    });
+                    e.target.classList.add('active-filter');
+                }
+            });
+
+            cardGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('[data-name]');
+                if (card) {
+                    showModal(card.dataset.name);
+                }
+            });
+
+            closeModalBtn.addEventListener('click', hideModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    hideModal();
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === "Escape" && !modal.classList.contains('pointer-events-none')) {
+                    hideModal();
+                }
+            });
+
+            createFilterButtons();
+            renderCards();
+        });
+    </script>
+</body>
+</html>
