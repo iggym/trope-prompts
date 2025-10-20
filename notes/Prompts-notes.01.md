@@ -1,0 +1,1 @@
+What are all the other names for figures of speech. What are the categories of figures of speech with examples. Create a list of all hundred plus figures of speech with a couple of diverse examples for each
